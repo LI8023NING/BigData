@@ -1,5 +1,6 @@
 #ifndef BIG_DATA_H
 #define BIG_DATA_H
+
 #include<string>
 #include<iostream>
 using namespace std;
@@ -13,8 +14,8 @@ typedef long long INT64;
 class BigData
 {
 public:
-	BigData(INT64 data = UN_INT); //缺省构造
-	BigData(const char *pData);   //构造
+	BigData(INT64 data = UN_INT); //缺省构造 初始值给一个long long 类型的data
+	BigData(const char *pData);   //构造 传参过来的是一个字符串
 
 	BigData operator+(BigData& bigData);
 	BigData operator-(const BigData& bigData);
@@ -33,7 +34,6 @@ public:
 	friend std::ostream& operator<<(std::ostream& _cout,const BigData& bigData);
 
 	bool IsINT64Owerflow() const;
-
 
 
 private:

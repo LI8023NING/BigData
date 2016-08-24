@@ -6,9 +6,9 @@ BigData::BigData(INT64 data)
 	: m_llValue(data)  //默认 UN_INT
 	, m_strData("")
 {
-	INT64ToString();  //将 longlong 型装到string
+	INT64ToString();  //将 longlong 型装到string 以备long long 类型数据和string类数据相运算
 }
-
+ 
 //接受字符处理  构造函数  初始化工作
 BigData::BigData(const char *_pData)
 {
@@ -39,7 +39,7 @@ BigData::BigData(const char *_pData)
 		pData++;
 
 	// "12457aaa123"  这里的pdata已经剔除前置0和符号位
-	m_strData.resize(strlen(pData)+1);
+	m_strData.resize(strlen(pData)+1);  //为什么加1 符号位还有一位
 	m_llValue = 0;
 	m_strData[0] = cSybom;
 	int iCount = 1;
@@ -538,9 +538,15 @@ std::ostream& operator<<(std::ostream& _cout, const BigData& bigData)
 void Test1()
 {
 	BigData s1("+99999999999999999999");
-	BigData s2("1");
+	BigData s2("+99999999999999999999");
+	BigData s3(-100);
 
-	cout<<s1+s2;
+	cout << s2 + s3 << endl;
+	cout << s1 + s2 << endl;
+	cout << s1 - s2 << endl;
+	cout << s1 * s2 << endl;
+	cout << s1 / s2 << endl;
+	cout << 1+1 << endl;
 }
 
 int main()
