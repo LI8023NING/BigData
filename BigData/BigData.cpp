@@ -69,14 +69,14 @@ BigData BigData::operator+(BigData& bigData)
 	// 8 + -2  10
 	if (!IsINT64Owerflow() && !bigData.IsINT64Owerflow())//相加的两个数据都未溢出
 	{
-		if (m_strData[0] != bigData.m_strData[0])
+		if (m_strData[0] != bigData.m_strData[0]) //没有溢出且符号不同 内置相加肯定不会溢出
 		{
 			return BigData(m_llValue+bigData.m_llValue);//编译器支持
 		}
 		else//同号
 		{
 			// 2 + 8  10 - 6 > 2
-			// -3 + -8  -10 - (-6) = -4 < -3
+			// -3 + -8  -10 - (-6) = -4 < -3 //用最大的处理 也能判断溢出问题
 			if (('+' == m_strData[0] && MAX_INT64 - m_llValue >= bigData.m_llValue) ||
 				('-') == m_strData[0] && MIN_INT64 - m_llValue <= bigData.m_llValue)
 			{
@@ -88,7 +88,7 @@ BigData BigData::operator+(BigData& bigData)
 	//溢出至少一个
 	// 2 + 2 / -2 + -2 == -(2+2)
 	// 2 + -1 
-	std::string strRet;
+	std::string strRet; //至少一个溢出 且同号
 	if (m_strData[0] == bigData.m_strData[0])
 	{
 		strRet = Add(m_strData, bigData.m_strData);
@@ -140,7 +140,7 @@ BigData BigData::operator*(const BigData& bigData)
 {
 	if (0 == m_llValue || 0 == bigData.m_llValue)
 	{
-		return BigData(INT64(0));
+		return BigData(INT64(0));  //INT64(0) long long 类型的匿名对象
 	}
 
 	if (!IsINT64Owerflow() && !bigData.IsINT64Owerflow())
@@ -149,6 +149,8 @@ BigData BigData::operator*(const BigData& bigData)
 		{
 			// 10 /2 = 5 >= 1 2 3 4 5
 			// 10 /-2 = -5 <= -5 -4 -3 -2 -1 
+
+			//这个操作成立的话 可保证相乘不会溢出
 			if (('+' == m_strData[0] && MAX_INT64 / m_llValue >= bigData.m_llValue) ||
 				('-' == m_strData[0] && MAX_INT64 / m_llValue <= bigData.m_llValue))
 			{
@@ -189,8 +191,8 @@ BigData BigData::operator /(const BigData& bigData)
 
 std::string BigData::Add(std::string left, std::string right)
 {
-	int iLSize = left.size();
-	int iRSize = right.size();
+	int iLSize = left.size();    //统计左边长度 为了调换准备
+	int iRSize = right.size();   //右边
 	if (iLSize < iRSize)
 	{
 		std::swap(left, right);
@@ -200,7 +202,7 @@ std::string BigData::Add(std::string left, std::string right)
 //	+                11111111
 
 
-	std::string strRet;
+	std::string strRet;     //保存相加加过
 	strRet.resize(iLSize+1);//给对象分派空间 相加的结果 最多就是左边的多一位 进位啊
 	strRet[0] = left[0];
 	char cStep = 0;//进位
@@ -211,7 +213,7 @@ std::string BigData::Add(std::string left, std::string right)
 	{
 		char cRet = left[iLSize - iIdx] - '0' + cStep;
 
-		if (iIdx < iRSize)
+		if (iIdx < iRSize)  //判断右边的结束了没 右边短
 		{
 			cRet += (right[iRSize - iIdx] - '0');
 		}
@@ -295,7 +297,7 @@ std::string BigData::Mul(std::string left, std::string right)
 
 	std::string strRet;
 	//strRet.resize(iLSize + iRSize - 1);
-	strRet.assign(iLSize + iRSize - 1, '0');
+	strRet.assign(iLSize + iRSize - 1, '0');  //把前面长度用0填补
 	strRet[0] = cSymbol;
 	int iDataLen = strRet.size();
 	int iOffset = 0;
@@ -537,8 +539,8 @@ std::ostream& operator<<(std::ostream& _cout, const BigData& bigData)
 
 void Test1()
 {
-	BigData s1("+99999999999999999999");
-	BigData s2("+99999999999999999999");
+	BigData s1("+99999999999999999999999");
+	BigData s2("99");
 	BigData s3(-100);
 
 	cout << s2 + s3 << endl;
@@ -546,6 +548,7 @@ void Test1()
 	cout << s1 - s2 << endl;
 	cout << s1 * s2 << endl;
 	cout << s1 / s2 << endl;
+	cout << s3 + s3 << endl;
 	cout << 1+1 << endl;
 }
 
